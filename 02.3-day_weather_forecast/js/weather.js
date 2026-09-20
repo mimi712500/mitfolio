@@ -1,7 +1,8 @@
 import {weatherSvg} from "./weatherSvg.js";
-import config from "./apykey.js";
+import config from "./apikey.js";
 
 const WEWTHER_API_KEY = config.WEWTHER_API_KEY;
+const MAPS_PLATFORM_API_KEY = config.MAPS_PLATFORM_API_KEY;
 
 function pos(location){
     const lat = location.lat; // 위도
@@ -29,25 +30,19 @@ function geocoding(position){
     const lat = position.coords.latitude; // 위도
     const lng = position.coords.longitude; // 경도
     const params = new URLSearchParams({
-        latitude: lat,
-        longitude: lng,
-        language: "ko",
-        format: "json",
+        "key" : MAPS_PLATFORM_API_KEY,
+        "latlng" : [lat,lng],
     })
-    const url = `https://nominatim.openstreetmap.org/reverse?${params}`;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?${params}`;
 
     fetch(url).then(response => {
         return response.json();
     }).then(data => {
         const locationName = document.querySelector(".location__name");
-        locationName.innerText = data.results[4].formatted_address;locationName.innerText = data.display_name;
-        return pos({
-            lat: lat,
-            lng: lng
-        });
-    }).catch(err => {
-        console.error("Geocoding Error:", err);
-    });
+        locationName.innerText = data.results[4].formatted_address;
+        return pos(data.results[4].geometry.location);
+    })
+    console.log(MAPS_PLATFORM_API_KEY);
 };
 
 // 텍스트 삽입
