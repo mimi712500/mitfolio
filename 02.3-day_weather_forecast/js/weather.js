@@ -1,6 +1,7 @@
 import {weatherSvg} from "./weatherSvg.js";
-const WEWTHER_API_KEY = "14f81daf1e494a66afe71318241910";
-const MAPS_PLATFORM_API_KEY = "AIzaSyB14aweftuWa4DkztRzk5_JSU-e9f2xQWo";
+import config from "./apykey.js";
+
+const WEWTHER_API_KEY = config.WEWTHER_API_KEY;
 
 function pos(location){
     const lat = location.lat; // 위도
@@ -28,18 +29,25 @@ function geocoding(position){
     const lat = position.coords.latitude; // 위도
     const lng = position.coords.longitude; // 경도
     const params = new URLSearchParams({
-        "key" : MAPS_PLATFORM_API_KEY,
-        "latlng" : [lat,lng],
+        latitude: lat,
+        longitude: lng,
+        language: "ko",
+        format: "json",
     })
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?${params}`;
+    const url = `https://nominatim.openstreetmap.org/reverse?${params}`;
 
     fetch(url).then(response => {
         return response.json();
     }).then(data => {
         const locationName = document.querySelector(".location__name");
-        locationName.innerText = data.results[4].formatted_address;
-        return pos(data.results[4].geometry.location);
-    })
+        locationName.innerText = data.results[4].formatted_address;locationName.innerText = data.display_name;
+        return pos({
+            lat: lat,
+            lng: lng
+        });
+    }).catch(err => {
+        console.error("Geocoding Error:", err);
+    });
 };
 
 // 텍스트 삽입
