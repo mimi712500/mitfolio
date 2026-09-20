@@ -42,7 +42,6 @@ function geocoding(position){
         locationName.innerText = data.results[4].formatted_address;
         return pos(data.results[4].geometry.location);
     })
-    console.log(MAPS_PLATFORM_API_KEY);
 };
 
 // 텍스트 삽입
